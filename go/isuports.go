@@ -640,7 +640,7 @@ func tenantsBillingHandler(c echo.Context) error {
 	}
 
 	before := c.QueryParam("before")
-	var beforeID int64
+	var beforeID int64 = 100000000
 	if before != "" {
 		var err error
 		beforeID, err = strconv.ParseInt(before, 10, 64)
