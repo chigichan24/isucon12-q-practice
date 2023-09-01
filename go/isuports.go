@@ -781,11 +781,11 @@ func playersAddHandler(c echo.Context) error {
 
 	pds := make([]PlayerDetail, 0, len(displayNames))
 	var sqlStr string
-	sqlStr = "INSERT INTO player (id, tenant_id, display_name, is_disqualified, created_at, updated_at) VALUES"
+	sqlStr = "INSERT INTO player (id, tenant_id, display_name, is_disqualified, created_at, updated_at) VALUES "
 	for i, displayName := range displayNames {
 		id := dispenseID()
 		now := time.Now().Unix()
-		sqlStr = sqlStr + fmt.Sprintf("(%s, %d, %s, false, %d, %d)", id, v.tenantID, displayName, now, now)
+		sqlStr = sqlStr + fmt.Sprintf("('%s', %d, %s, false, %d, %d)", id, v.tenantID, displayName, now, now)
 		if i < len(displayNames)-1 {
 			sqlStr += ", "
 		}
