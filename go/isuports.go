@@ -1105,7 +1105,8 @@ func competitionScoreHandler(c echo.Context) error {
 		baseSqlString,
 	); err != nil {
 		return fmt.Errorf(
-			"error Insert player_score: bulk insert",
+			"error Insert player_score: %s",
+			baseSqlString,
 		)
 	}
 
