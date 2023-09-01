@@ -800,7 +800,8 @@ func playersAddHandler(c echo.Context) error {
 		sqlStr,
 	); err != nil {
 		return fmt.Errorf(
-			"error Insert player at tenantDB: bulk insert",
+			"error Insert player at tenantDB: ?",
+			sqlStr,
 		)
 	}
 
