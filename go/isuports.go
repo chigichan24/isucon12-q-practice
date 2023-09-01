@@ -1354,7 +1354,7 @@ func competitionRankingHandler(c echo.Context) error {
 	// if err != nil {
 	// 	return fmt.Errorf("error flockByTenantID: %w", err)
 	// }
-	defer fl.Close()
+	// defer fl.Close()
 	pss := []PlayerScoreAndPlayerRow{}
 	if err := tenantDB.SelectContext(
 		ctx,
