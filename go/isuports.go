@@ -431,6 +431,7 @@ type PlayerScoreAndPlayerRow struct {
 	CreatedAt     int64  `db:"player_score.created_at"`
 	UpdatedAt     int64  `db:"player_score.updated_at"`
 	DisplayName   string `db:"player.display_name"`
+	PlayerRawID   int64  `db:"player.id"`
 }
 
 // 排他ロックのためのファイル名を生成する
