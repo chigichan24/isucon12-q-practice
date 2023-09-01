@@ -1095,7 +1095,7 @@ func competitionScoreHandler(c echo.Context) error {
 	// CreatedAt     int64  `db:"created_at"`
 	// UpdatedAt     int64  `db:"updated_at"`
 	for i, ps := range playerScoreRows {
-		baseSqlString += baseSqlString + fmt.Sprintf("('%s', %v, '%s', '%s', %v, %v, %v, %v)", ps.ID, ps.TenantID, ps.PlayerID, ps.CompetitionID, ps.Score, ps.RowNum, ps.CreatedAt, ps.UpdatedAt)
+		baseSqlString = baseSqlString + fmt.Sprintf("('%s', %v, '%s', '%s', %v, %v, %v, %v)", ps.ID, ps.TenantID, ps.PlayerID, ps.CompetitionID, ps.Score, ps.RowNum, ps.CreatedAt, ps.UpdatedAt)
 		if i < len(playerScoreRows)-1 {
 			baseSqlString += ", "
 		}
