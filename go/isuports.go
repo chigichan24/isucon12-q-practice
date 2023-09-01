@@ -99,9 +99,9 @@ func createTenantDB(id int64) error {
 }
 
 // システム全体で一意なIDを生成する
-func dispenseID(ctx context.Context) (string, error) {
+func dispenseID() string {
 	uuidObj, _ := uuid.NewUUID()
-	return uuidObj.String(), nil
+	return uuidObj.String()
 }
 
 // 全APIにCache-Control: privateを設定する
@@ -780,28 +780,28 @@ func playersAddHandler(c echo.Context) error {
 	displayNames := params["display_name[]"]
 
 	pds := make([]PlayerDetail, 0, len(displayNames))
-	for _, displayName := range displayNames {
-		id, err := dispenseID(ctx)
-		if err != nil {
-			return fmt.Errorf("error dispenseID: %w", err)
-		}
-
+	var sqlStr string
+	sqlStr = "INSERT INTO player (id, tenant_id, display_name, is_disqualified, created_at, updated_at) VALUES"
+	for i, displayName := range displayNames {
+		id := dispenseID()
 		now := time.Now().Unix()
-		if _, err := tenantDB.ExecContext(
-			ctx,
-			"INSERT INTO player (id, tenant_id, display_name, is_disqualified, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
-			id, v.tenantID, displayName, false, now, now,
-		); err != nil {
-			return fmt.Errorf(
-				"error Insert player at tenantDB: id=%s, displayName=%s, isDisqualified=%t, createdAt=%d, updatedAt=%d, %w",
-				id, displayName, false, now, now, err,
-			)
+		sqlStr = sqlStr + fmt.Sprintf("(%s, %d, %s, false, %d, %d)", id, v.tenantID, displayName, now, now)
+		if i < len(displayNames)-1 {
+			sqlStr += ", "
 		}
 		pds = append(pds, PlayerDetail{
 			ID:             id,
 			DisplayName:    displayName,
 			IsDisqualified: false,
 		})
+	}
+	if _, err := tenantDB.ExecContext(
+		ctx,
+		sqlStr,
+	); err != nil {
+		return fmt.Errorf(
+			"error Insert player at tenantDB: bulk insert",
+		)
 	}
 
 	res := PlayersAddHandlerResult{
@@ -895,10 +895,7 @@ func competitionsAddHandler(c echo.Context) error {
 	title := c.FormValue("title")
 
 	now := time.Now().Unix()
-	id, err := dispenseID(ctx)
-	if err != nil {
-		return fmt.Errorf("error dispenseID: %w", err)
-	}
+	id := dispenseID()
 	if _, err := tenantDB.ExecContext(
 		ctx,
 		"INSERT INTO competition (id, tenant_id, title, finished_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
@@ -1065,10 +1062,7 @@ func competitionScoreHandler(c echo.Context) error {
 				fmt.Sprintf("error strconv.ParseUint: scoreStr=%s, %s", scoreStr, err),
 			)
 		}
-		id, err := dispenseID(ctx)
-		if err != nil {
-			return fmt.Errorf("error dispenseID: %w", err)
-		}
+		id := dispenseID()
 		now := time.Now().Unix()
 		playerScoreRows = append(playerScoreRows, PlayerScoreRow{
 			ID:            id,
