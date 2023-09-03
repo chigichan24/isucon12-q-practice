@@ -799,10 +799,7 @@ func playersAddHandler(c echo.Context) error {
 		ctx,
 		sqlStr,
 	); err != nil {
-		return fmt.Errorf(
-			"error Insert player at tenantDB: ?",
-			sqlStr,
-		)
+		return fmt.Errorf("error Insert player at tenantDB")
 	}
 
 	res := PlayersAddHandlerResult{
