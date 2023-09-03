@@ -18,6 +18,9 @@ import (
 	"strings"
 	"time"
 
+	_ "net/http/pprof"
+	"runtime"
+
 	"github.com/go-sql-driver/mysql"
 	"github.com/gofrs/flock"
 	"github.com/google/uuid"
@@ -117,6 +120,10 @@ func Run() {
 	e := echo.New()
 	e.Debug = true
 	e.Logger.SetLevel(log.DEBUG)
+	runtime.SetBlockProfileRate(1)
+	go func() {
+		log.Print(http.ListenAndServe("0.0.0.0:9999", nil))
+	}()
 
 	var (
 		sqlLogger io.Closer
