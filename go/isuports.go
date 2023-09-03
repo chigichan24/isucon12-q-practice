@@ -1099,7 +1099,7 @@ func competitionScoreHandler(c echo.Context) error {
 			baseSqlString += ", "
 		}
 	}
-	if _, err := tenantDB.ExecContext(
+	if _, err := tx.ExecContext(
 		ctx,
 		baseSqlString,
 	); err != nil {
