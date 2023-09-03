@@ -87,6 +87,7 @@ func connectToTenantDB(id int64) (*sqlx.DB, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to open tenant DB: %w", err)
 	}
+	db.SetMaxOpenConns(20)
 	return db, nil
 }
 
@@ -177,7 +178,7 @@ func Run() {
 		e.Logger.Fatalf("failed to connect db: %v", err)
 		return
 	}
-	adminDB.SetMaxOpenConns(10)
+	adminDB.SetMaxOpenConns(50)
 	defer adminDB.Close()
 
 	port := getEnv("SERVER_APP_PORT", "3000")
