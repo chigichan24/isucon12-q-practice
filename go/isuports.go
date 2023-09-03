@@ -1077,12 +1077,14 @@ func competitionScoreHandler(c echo.Context) error {
 		})
 	}
 
-	if _, err := tenantDB.ExecContext(
+	tx, err := tenantDB.Beginx()
+	if _, err := tx.ExecContext(
 		ctx,
 		"DELETE FROM player_score WHERE tenant_id = ? AND competition_id = ?",
 		v.tenantID,
 		competitionID,
 	); err != nil {
+		tx.Rollback()
 		return fmt.Errorf("error Delete player_score: tenantID=%d, competitionID=%s, %w", v.tenantID, competitionID, err)
 	}
 	var baseSqlString string = "INSERT INTO player_score (id, tenant_id, player_id, competition_id, score, row_num, created_at, updated_at) VALUES "
@@ -1104,11 +1106,13 @@ func competitionScoreHandler(c echo.Context) error {
 		ctx,
 		baseSqlString,
 	); err != nil {
+		tx.Rollback()
 		return fmt.Errorf(
 			"error Insert player_score: %s",
 			baseSqlString,
 		)
 	}
+	tx.Commit()
 
 	return c.JSON(http.StatusOK, SuccessResult{
 		Status: true,
@@ -1355,6 +1359,7 @@ func competitionRankingHandler(c echo.Context) error {
 	// 	return fmt.Errorf("error flockByTenantID: %w", err)
 	// }
 	// defer fl.Close()
+
 	pss := []PlayerScoreAndPlayerRow{}
 	if err := tenantDB.SelectContext(
 		ctx,
